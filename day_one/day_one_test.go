@@ -17,5 +17,6 @@ var example = []string{
 }
 
 func TestDayOne(t *testing.T) {
-	assert.Equal(t, total(example), int64(281))
+	expected := int64(281)
+	assert.Equal(t, expected, total(example))
 }

@@ -6,6 +6,8 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+
+	"github.com/juanigtorres/adventofcode/slices"
 )
 
 //go:embed input
@@ -80,14 +82,12 @@ func extremes(digits []int64) int64 {
 }
 
 func total(lines []string) int64 {
-	var total int64
-	for _, line := range lines {
+	return slices.Reduce(lines, func(total int64, line string) int64 {
 		p := parse(line)
 		d := digits(p)
 		v := extremes(d)
-		total += v
-	}
-	return total
+		return total + v
+	}, 0)
 }
 
 func main() {
