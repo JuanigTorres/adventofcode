@@ -9,7 +9,7 @@ import (
 	"github.com/juanigtorres/adventofcode/slices"
 )
 
-//go:embed input
+//go:embed input.txt
 var input string
 
 func parse(game string) (string, map[string]int64) {

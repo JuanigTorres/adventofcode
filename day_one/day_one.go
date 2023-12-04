@@ -10,7 +10,7 @@ import (
 	"github.com/juanigtorres/adventofcode/slices"
 )
 
-//go:embed input
+//go:embed input.txt
 var input string
 
 var numbers = map[string]string{
