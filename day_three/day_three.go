@@ -29,11 +29,11 @@ func matrix(s string) [][]rune {
 	return result
 }
 
-func allEmptySymbols(runes []rune) bool {
-	hasSpecialChar := slices.Some(runes, func(r rune) bool {
+func hasAllPartSymbols(runes []rune) bool {
+	hasSomeNonePartSymnbol := slices.Some(runes, func(r rune) bool {
 		return r != '.'
 	})
-	return !hasSpecialChar
+	return !hasSomeNonePartSymnbol
 }
 
 func isDigit(r rune) bool {
@@ -48,8 +48,8 @@ func adyacents(row []rune) []Number {
 	for i := 0; i < lenght; i++ {
 		if isDigit(row[i]) {
 			start := i
-			end := i
-			for end < lenght - 1 && isDigit(row[end]) {
+			end := i + 1
+			for end < lenght && isDigit(row[end]) {
 				end++
 			}
 			value, _ := strconv.Atoi(string(row[start:end]))
@@ -70,21 +70,33 @@ func neightbors(num Number, mtrx [][]rune, i int) []rune {
 	result := make([]rune, 0)
 	from, to := num.start, num.end
 
-	if num.start > 0 {
-		from--
+	if from > 0 {
+		from --
 		result = append(result, mtrx[i][from])
 	}
 
-	if num.end < len(mtrx[i]) {
+	if to < len(mtrx[i]) {
 		result = append(result, mtrx[i][to])
 	}
 
 	if i > 0 {
-		result = append(result, mtrx[i-1][from:to+1]...)
+		if to == len(mtrx[i]) {
+			result = append(result, mtrx[i-1][from:to]...)
+		}
+
+		if to < len(mtrx[i]) {
+			result = append(result, mtrx[i-1][from:to + 1]...)
+		}
 	}
 
-	if i < len(mtrx[i])-1 {
-		result = append(result, mtrx[i+1][from:to+1]...)
+	if i < len(mtrx[i]) - 1 {
+		if to == len(mtrx[i]) {
+			result = append(result, mtrx[i+1][from:to]...)
+		}
+
+		if to < len(mtrx[i]) {
+			result = append(result, mtrx[i+1][from:to + 1]...)
+		}
 	}
 
 	return result
@@ -92,15 +104,23 @@ func neightbors(num Number, mtrx [][]rune, i int) []rune {
 
 func parts(input string) []int64 {
 	mtrx := matrix(input)
+	lines := make([][]int64, 0)
 	result := make([]int64, 0)
 
 	for i := 0; i < len(mtrx); i++ {
+		line := make([]int64, 0)
 		nums := adyacents(mtrx[i])
 		for _, num := range nums {
-			if !allEmptySymbols(neightbors(num, mtrx, i)) {
+			if !hasAllPartSymbols(neightbors(num, mtrx, i)) {
+				line = append(line, int64(num.value))
 				result = append(result, int64(num.value))
 			}
 		}
+		lines = append(lines, line)
+	}
+
+	for i, line := range lines {
+		fmt.Printf("Line #%d: %v\n", i+1, line)
 	}
 
 	return result
