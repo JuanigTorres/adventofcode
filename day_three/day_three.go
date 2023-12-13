@@ -15,33 +15,11 @@ var input string
 
 type Number struct {
 	value, start, end int
+	neightbors []Symbol
 }
 
-func matrix(s string) [][]rune {
-	result := make([][]rune, 0)
-	rows := strings.Split(s, "\n")
-
-	for _, row := range rows {
-		runes := bytes.Runes([]byte(row))
-		result = append(result, runes)
-	}
-
-	return result
-}
-
-func hasAllPartSymbols(runes []rune) bool {
-	hasSomeNonePartSymnbol := slices.Some(runes, func(r rune) bool {
-		return r != '.'
-	})
-	return !hasSomeNonePartSymnbol
-}
-
-func isDigit(r rune) bool {
-	digits := []rune{ '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'}
-	return slices.Some(digits, func(d rune) bool { return d == r })
-}
-
-func adyacents(row []rune) []Number {
+func numbers(mtrx [][]rune, pos int) []Number {
+	row := mtrx[pos]
 	lenght := len(row)
 	result := make([]Number, 0)
 
@@ -57,6 +35,7 @@ func adyacents(row []rune) []Number {
 				start: start,
 				end:   end,
 				value: value,
+				neightbors: symbols(value, start, end, mtrx, pos),
 			}
 			result = append(result, n)
 			i = end
@@ -66,64 +45,146 @@ func adyacents(row []rune) []Number {
 	return result
 }
 
-func neightbors(num Number, mtrx [][]rune, i int) []rune {
-	result := make([]rune, 0)
-	from, to := num.start, num.end
+type (
+	Point struct {
+		x, y int
+	}
+
+	Symbol struct {
+		value string
+		point Point
+	}
+)
+
+func symbols(num, start, end int, mtrx [][]rune, i int) []Symbol {
+	result := make([]Symbol, 0)
+	from, to := start, end
 
 	if from > 0 {
 		from --
-		result = append(result, mtrx[i][from])
+		s := Symbol {
+			value: string(mtrx[i][from]),
+			point: Point{ x: i, y: from },
+		}
+		result = append(result, s)
 	}
 
 	if to < len(mtrx[i]) {
-		result = append(result, mtrx[i][to])
+		s := Symbol {
+			value: string(mtrx[i][to]),
+			point: Point{ x: i, y: to },
+		}
+		result = append(result, s)
 	}
 
 	if i > 0 {
+		x := i - 1
+		below := make([]rune, 0)
+		
 		if to == len(mtrx[i]) {
-			result = append(result, mtrx[i-1][from:to]...)
+			below = append(below, mtrx[x][from:to]...)
 		}
 
 		if to < len(mtrx[i]) {
-			result = append(result, mtrx[i-1][from:to + 1]...)
+			below = append(below, mtrx[x][from:to + 1]...)
+		}
+
+		
+		for idx, v := range below {
+			y := idx + from
+			s := Symbol {
+				value: string(v),
+				point: Point{ x: x, y: y },
+			}
+			result = append(result, s)
 		}
 	}
 
 	if i < len(mtrx[i]) - 1 {
+		x := i + 1
+		above := make([]rune, 0)
+
 		if to == len(mtrx[i]) {
-			result = append(result, mtrx[i+1][from:to]...)
+			above = append(above, mtrx[x][from:to]...)
 		}
 
 		if to < len(mtrx[i]) {
-			result = append(result, mtrx[i+1][from:to + 1]...)
+			above = append(above, mtrx[x][from:to + 1]...)
+		}
+
+		for idx, v := range above {
+			y := idx + from
+			s := Symbol {
+				value: string(v),
+				point: Point{ x: x, y: y },
+			}
+			result = append(result, s)
 		}
 	}
 
 	return result
 }
 
-func parts(input string) []int64 {
-	mtrx := matrix(input)
-	lines := make([][]int64, 0)
-	result := make([]int64, 0)
+func gearRatios(numbers []Number) []int64 {
+	ratios := make([]int64, 0)
+	gears := make(map[string][]Number)
 
-	for i := 0; i < len(mtrx); i++ {
-		line := make([]int64, 0)
-		nums := adyacents(mtrx[i])
-		for _, num := range nums {
-			if !hasAllPartSymbols(neightbors(num, mtrx, i)) {
-				line = append(line, int64(num.value))
-				result = append(result, int64(num.value))
+	for _, n := range numbers {
+		for _, symbol := range n.neightbors {
+			if symbol.value == "*" {
+				k := fmt.Sprintf("(%d,%d)", symbol.point.x, symbol.point.y)
+				gears[k] = append(gears[k], n)
 			}
 		}
-		lines = append(lines, line)
 	}
 
-	for i, line := range lines {
-		fmt.Printf("Line #%d: %v\n", i+1, line)
+	for _, nums := range gears {
+		if len(nums) == 2 {
+			ratio := nums[0].value * nums[1].value
+			ratios = append(ratios, int64(ratio))
+		}
+	}
+
+	return ratios
+}
+
+func parseSchematic(s string) [][]rune {
+	result := make([][]rune, 0)
+	rows := strings.Split(s, "\n")
+
+	for _, row := range rows {
+		runes := bytes.Runes([]byte(row))
+		result = append(result, runes)
 	}
 
 	return result
+}
+
+func parts(nums []Number) []int64 {
+	result := make([]int64, 0)
+	for _, num := range nums {
+		if ok := slices.Some(num.neightbors, func(s Symbol) bool { return s.value != "." }); ok {
+			result = append(result, int64(num.value))
+		}
+	}
+	
+	return result
+}
+
+func isDigit(r rune) bool {
+	digits := []rune{ '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'}
+	return slices.Some(digits, func(d rune) bool { return d == r })
+}
+
+func resolveSchematic(input string) ([]int64, []int64) {
+	mtrx := parseSchematic(input)
+	nums := make([]Number, 0)
+
+	for i := 0; i < len(mtrx); i++ {
+		nums = append(nums, numbers(mtrx, i)...)	
+	}
+
+	return parts(nums), gearRatios(nums)
 }
 
 func sum(numbers []int64) int64 {
@@ -133,6 +194,8 @@ func sum(numbers []int64) int64 {
 }
 
 func main() {
-	total := sum(parts(input))
-	fmt.Printf("total: %d\n", total)
+	numbersParts, gearRatios := resolveSchematic(input)
+	
+	fmt.Printf("Part 1: %d\n", sum(numbersParts))
+	fmt.Printf("Part 2: %d\n", sum(gearRatios))
 }

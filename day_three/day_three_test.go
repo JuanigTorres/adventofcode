@@ -18,9 +18,11 @@ var example = `467..114..
 .664.598..`
 
 func TestDayThree(t *testing.T) {
-	expected := []int64{ 467, 35, 633, 617, 592, 755, 664, 598 }
+	expectedNumbers := []int64{ 467, 35, 633, 617, 592, 755, 664, 598 }
+	expectedRatios := []int64{ 16345, 451490 }
 
-	actual := parts(example)
+	actualNumbers, actualRatios := resolveSchematic(example)
 
-	assert.Equal(t, expected, actual)
+	assert.Equal(t, expectedNumbers, actualNumbers)
+	assert.Equal(t, expectedRatios, actualRatios)
 }
