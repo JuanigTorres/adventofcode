@@ -16,3 +16,25 @@ func Some[T any](arr []T, apply func(t T) bool) bool {
 	}
 	return false
 }
+
+func Map[T, R any](arr []T, apply func (T) R) []R {
+	r := make([]R, 0, len(arr))
+
+	for _, a := range arr {
+		r = append(r, apply(a))
+	}
+
+	return r
+}
+
+func Filter[T any](arr []T, apply func (T) bool) []T {
+	r := make([]T, 0, len(arr))
+
+	for _, a := range arr {
+		if !apply(a){
+			r = append(r, a)
+		}
+	}
+
+	return r
+}
