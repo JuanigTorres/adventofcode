@@ -31,36 +31,43 @@ func NewScratchcardsFromString(s string) Scratchcards {
 	return r
 }
 
-func (s Scratchcard) TotalWinningNumbers() int {
-	count := 0
+func (s Scratchcard) Wins() int {
+	wins := 0
 	for _, winner := range s.winners {
 		for _, number := range s.numbers {
 			if number == winner {
-				count++
+				wins++
 			}
 		}
 	}
-	return count
+	return wins
 }
 
 func (s Scratchcard) Points() int {
-	count := 0
-	for _, winner := range s.winners {
-		for _, number := range s.numbers {
-			if number == winner {
-				count++
-			}
-		}
-	}
-
+	count := s.Wins()
 	if count > 0 {
 		return int(math.Pow(float64(2), float64(count-1)))
 	}
 	return count
 }
 
-func (s Scratchcards) TotalPoints() int {
-	return slices.Reduce(s, func(prev int, scratchcard Scratchcard) int {
+func (ss Scratchcards) TotalPoints() int {
+	return slices.Reduce(ss, func(prev int, scratchcard Scratchcard) int {
 		return prev + scratchcard.Points()
 	}, 0)
+}
+
+func (ss Scratchcards) TotalCards() int {
+	return totalCards(ss, 0)
+}
+
+func totalCards(ss Scratchcards, total int) int {
+	for i, scratchcard := range ss {
+		next := i + 1
+		offset := scratchcard.Wins()
+		copies := ss[next:next+offset]
+		total = totalCards(copies, total + 1)
+	}
+
+	return total
 }

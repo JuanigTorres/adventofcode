@@ -10,6 +10,6 @@ var input string
 
 
 func main() {
-	total := NewScratchcardsFromString(input).TotalPoints()
-	fmt.Println("Total", total)
+	fmt.Println("Part 1", NewScratchcardsFromString(input).TotalPoints())
+	fmt.Println("Part 2", NewScratchcardsFromString(input).TotalCards())
 }

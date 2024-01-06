@@ -16,4 +16,5 @@ Card 6: 31 18 13 56 72 | 74 77 10 23 35 67 36 11`
 
 func TestScratchcards(t *testing.T) {
 	assert.Equal(t, NewScratchcardsFromString(example).TotalPoints(), 13)
+	assert.Equal(t, NewScratchcardsFromString(example).TotalCards(), 30)
 }
