@@ -1,24 +1,23 @@
 package main
 
 import (
-	_ "embed"
 	"fmt"
 	"strconv"
 	"strings"
 
+	"github.com/juanigtorres/adventofcode/resources"
 	"github.com/juanigtorres/adventofcode/slices"
 )
 
-//go:embed input.txt
-var input string
+var input string = resources.InputStringByDay(2)
 
 func parse(game string) (string, map[string]int64) {
 	result := map[string]int64{
-		"red": 0,
+		"red":   0,
 		"green": 0,
-		"blue": 0,
+		"blue":  0,
 	}
-	
+
 	g := strings.Split(game, ": ")
 	id, info := strings.Split(g[0], " ")[1], g[1]
 	sets := strings.Split(info, "; ")
@@ -47,16 +46,16 @@ func total(games []string, red, green, blue int64) (int64, int64) {
 			gids = append(gids, gid)
 		}
 	}
-	
+
 	t := slices.Reduce(gids, func(total int64, curr string) int64 {
 		id, _ := strconv.ParseInt(curr, 10, 64)
 		return total + id
 	}, 0)
 
-	p := slices.Reduce(powers, func(total int64, curr int64) int64 { 
+	p := slices.Reduce(powers, func(total int64, curr int64) int64 {
 		return total + curr
 	}, 0)
-	
+
 	return t, p
 }
 

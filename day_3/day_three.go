@@ -2,20 +2,19 @@ package main
 
 import (
 	"bytes"
-	_ "embed"
 	"fmt"
 	"strconv"
 	"strings"
 
+	"github.com/juanigtorres/adventofcode/resources"
 	"github.com/juanigtorres/adventofcode/slices"
 )
 
-//go:embed input.txt
-var input string
+var input string = resources.InputStringByDay(3)
 
 type Number struct {
 	value, start, end int
-	neightbors []Symbol
+	neightbors        []Symbol
 }
 
 func numbers(mtrx [][]rune, pos int) []Number {
@@ -32,9 +31,9 @@ func numbers(mtrx [][]rune, pos int) []Number {
 			}
 			value, _ := strconv.Atoi(string(row[start:end]))
 			n := Number{
-				start: start,
-				end:   end,
-				value: value,
+				start:      start,
+				end:        end,
+				value:      value,
 				neightbors: symbols(value, start, end, mtrx, pos),
 			}
 			result = append(result, n)
@@ -61,18 +60,18 @@ func symbols(num, start, end int, mtrx [][]rune, i int) []Symbol {
 	from, to := start, end
 
 	if from > 0 {
-		from --
-		s := Symbol {
+		from--
+		s := Symbol{
 			value: string(mtrx[i][from]),
-			point: Point{ x: i, y: from },
+			point: Point{x: i, y: from},
 		}
 		result = append(result, s)
 	}
 
 	if to < len(mtrx[i]) {
-		s := Symbol {
+		s := Symbol{
 			value: string(mtrx[i][to]),
-			point: Point{ x: i, y: to },
+			point: Point{x: i, y: to},
 		}
 		result = append(result, s)
 	}
@@ -80,27 +79,26 @@ func symbols(num, start, end int, mtrx [][]rune, i int) []Symbol {
 	if i > 0 {
 		x := i - 1
 		below := make([]rune, 0)
-		
+
 		if to == len(mtrx[i]) {
 			below = append(below, mtrx[x][from:to]...)
 		}
 
 		if to < len(mtrx[i]) {
-			below = append(below, mtrx[x][from:to + 1]...)
+			below = append(below, mtrx[x][from:to+1]...)
 		}
 
-		
 		for idx, v := range below {
 			y := idx + from
-			s := Symbol {
+			s := Symbol{
 				value: string(v),
-				point: Point{ x: x, y: y },
+				point: Point{x: x, y: y},
 			}
 			result = append(result, s)
 		}
 	}
 
-	if i < len(mtrx[i]) - 1 {
+	if i < len(mtrx[i])-1 {
 		x := i + 1
 		above := make([]rune, 0)
 
@@ -109,14 +107,14 @@ func symbols(num, start, end int, mtrx [][]rune, i int) []Symbol {
 		}
 
 		if to < len(mtrx[i]) {
-			above = append(above, mtrx[x][from:to + 1]...)
+			above = append(above, mtrx[x][from:to+1]...)
 		}
 
 		for idx, v := range above {
 			y := idx + from
-			s := Symbol {
+			s := Symbol{
 				value: string(v),
-				point: Point{ x: x, y: y },
+				point: Point{x: x, y: y},
 			}
 			result = append(result, s)
 		}
@@ -167,12 +165,12 @@ func parts(nums []Number) []int64 {
 			result = append(result, int64(num.value))
 		}
 	}
-	
+
 	return result
 }
 
 func isDigit(r rune) bool {
-	digits := []rune{ '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'}
+	digits := []rune{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'}
 	return slices.Some(digits, func(d rune) bool { return d == r })
 }
 
@@ -181,7 +179,7 @@ func resolveSchematic(input string) ([]int64, []int64) {
 	nums := make([]Number, 0)
 
 	for i := 0; i < len(mtrx); i++ {
-		nums = append(nums, numbers(mtrx, i)...)	
+		nums = append(nums, numbers(mtrx, i)...)
 	}
 
 	return parts(nums), gearRatios(nums)
@@ -195,7 +193,7 @@ func sum(numbers []int64) int64 {
 
 func main() {
 	numbersParts, gearRatios := resolveSchematic(input)
-	
+
 	fmt.Printf("Part 1: %d\n", sum(numbersParts))
 	fmt.Printf("Part 2: %d\n", sum(gearRatios))
 }

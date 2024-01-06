@@ -1,17 +1,16 @@
 package main
 
 import (
-	_ "embed"
 	"fmt"
 	"sort"
 	"strconv"
 	"strings"
 
+	"github.com/juanigtorres/adventofcode/resources"
 	"github.com/juanigtorres/adventofcode/slices"
 )
 
-//go:embed input.txt
-var input string
+var input string = resources.InputStringByDay(1)
 
 var numbers = map[string]string{
 	"one":   "1",
@@ -32,7 +31,7 @@ func sorted(m map[string]string) []string {
 	}
 
 	sort.Slice(keys, func(i, j int) bool {
-		return numbers[keys[i]] < numbers[keys[j]] 
+		return numbers[keys[i]] < numbers[keys[j]]
 	})
 
 	return keys

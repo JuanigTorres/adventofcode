@@ -1,13 +1,12 @@
 package main
 
 import (
-	_ "embed"
 	"fmt"
+
+	"github.com/juanigtorres/adventofcode/resources"
 )
 
-//go:embed input.txt
-var input string
-
+var input string = resources.InputStringByDay(4)
 
 func main() {
 	fmt.Println("Part 1", NewScratchcardsFromString(input).TotalPoints())
