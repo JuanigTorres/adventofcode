@@ -4,7 +4,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/juanigtorres/adventofcode/slices"
+	// "github.com/juanigtorres/adventofcode/slices"
 )
 
 func numbers(s []string) []int {

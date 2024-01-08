@@ -17,13 +17,24 @@ func Some[T any](arr []T, apply func(t T) bool) bool {
 	return false
 }
 
-func Map[T, R any](arr []T, apply func (T) R) []R {
+func Value[S ~[]T, T any](arr S, idx int) T {
+	var v T
+
+	if (idx >= 0) || (len(arr) > idx) {
+		v = arr[idx]
+	}
+
+	return v
+}
+
+func Map[I ~[]T, T, R any](arr I, apply func (T) R) []R {
 	r := make([]R, 0, len(arr))
 
 	for _, a := range arr {
 		r = append(r, apply(a))
 	}
 
+	
 	return r
 }
 
